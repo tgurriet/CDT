@@ -297,6 +297,7 @@ CDT_EXPORT DuplicatesInfo RemoveDuplicatesAndRemapEdges(
  *  - 3 for triangles in island and so on...
  *
  * @tparam T type of vertex coordinates (e.g., float, double)
+ * @param seeds triangles with zero depth to start growing from
  * @param vertices vertices of triangulation
  * @param triangles triangles of triangulation
  * @param fixedEdges constraint edges of triangulation
@@ -304,6 +305,7 @@ CDT_EXPORT DuplicatesInfo RemoveDuplicatesAndRemapEdges(
  */
 template <typename T>
 CDT_EXPORT std::vector<unsigned short> CalculateTriangleDepths(
+    std::stack<TriInd> seeds,
     const std::vector<Vertex<T> >& vertices,
     const TriangleVec& triangles,
     const EdgeUSet& fixedEdges);

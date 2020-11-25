@@ -11,6 +11,7 @@
 
 #include "CDTUtils.h"
 #include <algorithm>
+#include <iterator>
 #include <stdexcept>
 
 namespace CDT
@@ -133,8 +134,25 @@ void Triangulation<T>::eraseOuterTriangles()
 template <typename T>
 void Triangulation<T>::eraseOuterTrianglesAndHoles()
 {
+    std::stack<TriInd> seeds;
+    for(TriangleVec::iterator it = triangles.begin();
+        it != triangles.end();
+        ++it)
+    {
+        for(NeighborsArr3::const_iterator nit = it->neighbors.begin();
+            nit != it->neighbors.end();
+            ++nit)
+        {
+            if(*nit == noNeighbor)
+            {
+                seeds.push(TriInd(std::distance(triangles.begin(), it)));
+                break;
+            }
+        }
+    }
+
     const std::vector<unsigned short> triDepths =
-        CalculateTriangleDepths(vertices, triangles, fixedEdges);
+        CalculateTriangleDepths(seeds, vertices, triangles, fixedEdges);
 
     TriIndVec toErase;
     toErase.reserve(triangles.size());
@@ -911,6 +929,7 @@ TriIndUSet PeelLayer(
 
 template <typename T>
 std::vector<unsigned short> CalculateTriangleDepths(
+    std::stack<TriInd> seeds,
     const std::vector<Vertex<T> >& vertices,
     const TriangleVec& triangles,
     const EdgeUSet& fixedEdges)
@@ -918,7 +937,6 @@ std::vector<unsigned short> CalculateTriangleDepths(
     std::vector<unsigned short> triDepths(
         triangles.size(), std::numeric_limits<unsigned short>::max());
     typedef std::deque<TriInd> TriDeque;
-    std::stack<TriInd> seeds(TriDeque(1, vertices[0].triangles.front()));
     unsigned short layerDepth = 0;
 
     do

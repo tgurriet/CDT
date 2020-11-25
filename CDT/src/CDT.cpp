@@ -42,10 +42,12 @@ template DuplicatesInfo RemoveDuplicatesAndRemapEdges<double>(
     std::vector<Edge>&);
 
 template std::vector<unsigned short> CalculateTriangleDepths(
+    std::stack<TriInd> seeds,
     const std::vector<Vertex<float> >& vertices,
     const TriangleVec& triangles,
     const EdgeUSet& fixedEdges);
 template std::vector<unsigned short> CalculateTriangleDepths(
+    std::stack<TriInd> seeds,
     const std::vector<CDT::Vertex<double> >& vertices,
     const TriangleVec& triangles,
     const EdgeUSet& fixedEdges);
